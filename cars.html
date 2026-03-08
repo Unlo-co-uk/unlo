@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unlo — Unlock what you own</title>
-  <meta name="description" content="Your car, watch, bike or instrument is worth money. Unlo turns idle assets into liquidity — without making you sell them." />
+  <title>Unlo — See what your car is worth</title>
+  <meta name="description" content="Enter your reg. See your car's current value, accessible equity, and what it could earn." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 
   <style>
     :root {
@@ -22,6 +22,7 @@
       --text: #E8F0F5;
       --muted: #5A7080;
       --muted2: #2A3A45;
+      --red: #e05555;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,17 +34,16 @@
       font-family: 'DM Sans', sans-serif;
       font-weight: 300;
       line-height: 1.6;
-      overflow-x: hidden;
+      min-height: 100vh;
     }
 
-    /* Subtle grid background */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(rgba(0,201,167,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,201,167,0.03) 1px, transparent 1px);
+        linear-gradient(rgba(0,201,167,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,201,167,0.025) 1px, transparent 1px);
       background-size: 60px 60px;
       pointer-events: none;
       z-index: 0;
@@ -51,930 +51,957 @@
 
     /* NAV */
     nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 1.25rem 2.5rem;
+      position: relative;
+      z-index: 10;
+      padding: 1.25rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      transition: background 0.3s, border-color 0.3s;
-      border-bottom: 1px solid transparent;
+      border-bottom: 1px solid var(--border);
+      background: rgba(6,8,10,0.9);
+      backdrop-filter: blur(12px);
     }
-    nav.scrolled {
-      background: rgba(6,8,10,0.94);
-      backdrop-filter: blur(16px);
-      border-color: var(--border);
-    }
-
     .nav-logo {
       font-family: 'Syne', sans-serif;
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       font-weight: 800;
       letter-spacing: -0.02em;
       color: var(--text);
       text-decoration: none;
       display: flex;
       align-items: center;
-      gap: 0.15rem;
     }
     .nav-logo-dot {
-      display: inline-block;
-      width: 7px;
-      height: 7px;
+      width: 6px; height: 6px;
       border-radius: 50%;
       background: var(--teal);
-      margin-left: 1px;
+      margin-left: 2px;
       margin-bottom: 2px;
+      display: inline-block;
     }
-    .nav-right {
+    .nav-back {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-decoration: none;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.4rem;
+      transition: color 0.2s;
     }
-    .nav-badge {
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.65rem;
-      font-weight: 500;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--teal);
-      border: 1px solid var(--teal-dim);
-      padding: 0.3rem 0.7rem;
-      border-radius: 100px;
-      background: var(--teal-faint);
-    }
+    .nav-back:hover { color: var(--text); }
 
-    /* HERO */
-    .hero {
+    /* MAIN */
+    main {
       position: relative;
       z-index: 1;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 8rem 2rem 5rem;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem 5rem;
     }
 
-    /* Glow */
-    .hero-glow {
-      position: absolute;
-      top: 15%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 700px;
-      height: 500px;
-      background: radial-gradient(ellipse, rgba(0,201,167,0.08) 0%, transparent 65%);
-      pointer-events: none;
-    }
-
-    .hero-eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.68rem;
-      letter-spacing: 0.18em;
+    /* HERO TEXT */
+    .page-eyebrow {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--teal);
-      margin-bottom: 2rem;
-      opacity: 0;
-      animation: fadeUp 0.7s ease forwards 0.1s;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
-    .hero-eyebrow-dot {
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--teal);
-      animation: pulse 2s ease-in-out infinite;
+    .page-eyebrow::before {
+      content: '';
+      display: block;
+      width: 16px;
+      height: 1px;
+      background: var(--teal-dim);
     }
-
-    .hero-headline {
+    .page-headline {
       font-family: 'Syne', sans-serif;
-      font-size: clamp(2.8rem, 7.5vw, 6rem);
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
       font-weight: 800;
-      line-height: 1.0;
-      letter-spacing: -0.03em;
-      color: var(--text);
-      max-width: 860px;
-      margin-bottom: 0.5rem;
-      opacity: 0;
-      animation: fadeUp 0.8s ease forwards 0.25s;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
     }
-
-    .hero-headline-italic {
+    .page-headline em {
       font-family: 'Instrument Serif', serif;
       font-style: italic;
       font-weight: 400;
       color: var(--teal);
-      letter-spacing: -0.01em;
     }
-
-    .hero-sub {
-      font-size: 1rem;
-      font-weight: 300;
+    .page-sub {
+      font-size: 0.9rem;
       color: var(--muted);
-      max-width: 420px;
-      line-height: 1.75;
-      margin: 1.75rem auto 2.5rem;
-      opacity: 0;
-      animation: fadeUp 0.8s ease forwards 0.4s;
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
     }
 
-    /* EMAIL CAPTURE */
-    .capture-wrap {
-      width: 100%;
-      max-width: 440px;
-      opacity: 0;
-      animation: fadeUp 0.8s ease forwards 0.55s;
-    }
-    .capture-form {
-      display: flex;
-      gap: 0.5rem;
+    /* INPUT CARD */
+    .input-card {
       background: var(--surface);
       border: 1px solid var(--border2);
-      border-radius: 8px;
-      padding: 0.4rem;
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-bottom: 1rem;
     }
-    .capture-input {
+    .input-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+      display: block;
+    }
+    .input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .reg-input {
       flex: 1;
-      background: transparent;
-      border: none;
+      background: var(--bg);
+      border: 1px solid var(--border2);
       color: var(--text);
-      padding: 0.7rem 1rem;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 300;
+      padding: 0.9rem 1.25rem;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
       outline: none;
+      transition: border-color 0.2s;
     }
-    .capture-input::placeholder { color: var(--muted2); }
-    .capture-btn {
+    .reg-input::placeholder {
+      color: var(--muted2);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+    }
+    .reg-input:focus { border-color: var(--teal-dim); }
+    .lookup-btn {
       background: var(--teal);
       color: var(--bg);
       border: none;
-      padding: 0.7rem 1.4rem;
-      border-radius: 5px;
+      padding: 0.9rem 1.5rem;
+      border-radius: 8px;
       font-family: 'Syne', sans-serif;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 700;
       letter-spacing: 0.04em;
       cursor: pointer;
       white-space: nowrap;
       transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
-    .capture-btn:hover { background: #00dbb8; }
-    .capture-btn:active { transform: scale(0.97); }
+    .lookup-btn:hover { background: #00dbb8; }
+    .lookup-btn:active { transform: scale(0.97); }
+    .lookup-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .capture-note {
+    .input-note {
       font-size: 0.68rem;
-      color: var(--muted);
-      margin-top: 0.85rem;
-      letter-spacing: 0.04em;
+      color: var(--muted2);
+      margin-top: 0.75rem;
     }
 
-    /* SUCCESS */
-    .success-wrap {
+    .error-msg {
       display: none;
+      font-size: 0.78rem;
+      color: var(--red);
+      margin-top: 0.6rem;
       align-items: center;
-      gap: 0.75rem;
-      background: rgba(0,201,167,0.07);
-      border: 1px solid rgba(0,201,167,0.25);
-      padding: 1rem 1.5rem;
-      border-radius: 8px;
-      max-width: 440px;
-      width: 100%;
+      gap: 0.4rem;
     }
-    .success-wrap.show { display: flex; }
-    .success-icon {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      background: var(--teal);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.7rem;
-      color: var(--bg);
-      flex-shrink: 0;
-      font-weight: 700;
-    }
-    .success-text { font-size: 0.875rem; color: var(--text); }
+    .error-msg.show { display: flex; }
 
-    /* SCROLL CUE */
-    .scroll-cue {
-      position: absolute;
-      bottom: 2.5rem;
-      left: 50%;
-      transform: translateX(-50%);
+    /* PLACEHOLDER STATE */
+    .placeholder-state {
+      border: 1px dashed var(--border2);
+      border-radius: 12px;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .placeholder-lines {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      opacity: 0;
-      animation: fadeUp 1s ease forwards 1.2s;
-    }
-    .scroll-cue-label {
-      font-size: 0.6rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .scroll-cue-bar {
-      width: 1px;
-      height: 44px;
-      background: linear-gradient(to bottom, var(--teal-dim), transparent);
-      animation: scrollBar 2.2s ease-in-out infinite;
-    }
-
-    /* STAT BAR */
-    .stat-bar {
-      position: relative;
-      z-index: 1;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .stat-item {
-      padding: 2.25rem 2rem;
-      border-right: 1px solid var(--border);
-      text-align: center;
-    }
-    .stat-item:last-child { border-right: none; }
-    .stat-number {
-      font-family: 'Syne', sans-serif;
-      font-size: 2.2rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: var(--text);
-      line-height: 1;
-      margin-bottom: 0.4rem;
-    }
-    .stat-number span { color: var(--teal); }
-    .stat-label {
-      font-size: 0.72rem;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-    }
-
-    /* SECTIONS */
-    .section {
-      position: relative;
-      z-index: 1;
-      max-width: 1080px;
-      margin: 0 auto;
-      padding: 6rem 2rem;
-    }
-
-    .section-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.65rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--teal);
-      margin-bottom: 1.25rem;
-    }
-    .section-tag::before {
-      content: '';
-      display: block;
-      width: 18px;
-      height: 1px;
-      background: var(--teal-dim);
-    }
-
-    .section-heading {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(1.8rem, 3.5vw, 2.75rem);
-      font-weight: 700;
-      letter-spacing: -0.025em;
-      line-height: 1.1;
-      color: var(--text);
-      max-width: 560px;
-    }
-    .section-heading em {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      font-weight: 400;
-      color: var(--teal);
-    }
-
-    /* ASSET GRID */
-    .asset-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 3rem;
-    }
-    .asset-card {
-      background: var(--surface);
-      padding: 1.75rem 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-      transition: background 0.2s;
-      cursor: default;
-    }
-    .asset-card:hover { background: var(--surface2); }
-    .asset-icon { font-size: 1.6rem; line-height: 1; }
-    .asset-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text);
-      letter-spacing: -0.01em;
-    }
-    .asset-range {
-      font-size: 0.68rem;
-      color: var(--muted);
-    }
-    .asset-pill {
-      display: inline-block;
-      font-size: 0.58rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--teal);
-      background: var(--teal-faint);
-      border: 1px solid rgba(0,201,167,0.2);
-      padding: 0.2rem 0.55rem;
-      border-radius: 100px;
-      width: fit-content;
-    }
-    .asset-pill.soon {
-      color: var(--muted);
-      background: transparent;
-      border-color: var(--border2);
-    }
-
-    /* HOW IT WORKS */
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 3rem;
-    }
-    .step-card {
-      background: var(--surface);
-      padding: 2.5rem 2rem;
-      position: relative;
-      transition: background 0.2s;
-    }
-    .step-card:hover { background: var(--surface2); }
-    .step-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      color: var(--teal);
-      margin-bottom: 2rem;
-    }
-    .step-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--text);
-      margin-bottom: 0.75rem;
-    }
-    .step-desc {
-      font-size: 0.82rem;
-      color: var(--muted);
-      line-height: 1.75;
-    }
-    .step-teal-bar {
-      position: absolute;
-      top: 0; left: 0;
-      width: 2px;
-      height: 100%;
-      background: var(--teal-dim);
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-    .step-card:hover .step-teal-bar { opacity: 1; }
-
-    /* COMPARISON */
-    .compare-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 3rem;
-    }
-    .compare-col {
-      background: var(--surface);
-      padding: 2.5rem 2rem;
-    }
-    .compare-col.unlo-col { background: var(--surface2); }
-    .compare-col-header {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding-bottom: 1.25rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .unlo-col .compare-col-header {
-      color: var(--teal);
-      border-color: var(--border2);
-    }
-    .compare-row {
-      display: flex;
-      align-items: flex-start;
       gap: 0.75rem;
-      margin-bottom: 0.9rem;
-      font-size: 0.82rem;
-      color: var(--muted);
-      line-height: 1.55;
+      max-width: 280px;
+      margin: 1rem auto 0;
     }
-    .unlo-col .compare-row { color: var(--text); }
-    .compare-marker {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      border: 1px solid var(--muted2);
-      flex-shrink: 0;
-      margin-top: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.55rem;
-      color: transparent;
-    }
-    .unlo-col .compare-marker {
-      background: var(--teal-faint);
-      border-color: var(--teal-dim);
-      color: var(--teal);
-    }
-
-    /* BIG QUOTE */
-    .quote-section {
-      position: relative;
-      z-index: 1;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      background: var(--surface);
-      padding: 5rem 2rem;
-      text-align: center;
-    }
-    .big-quote {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      font-size: clamp(1.6rem, 3.5vw, 2.75rem);
-      font-weight: 400;
-      line-height: 1.35;
-      color: var(--text);
-      max-width: 780px;
-      margin: 0 auto 1.25rem;
-    }
-    .big-quote span { color: var(--teal); }
-    .quote-attr {
-      font-size: 0.68rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    /* BOTTOM CTA */
-    .bottom-cta {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 7rem 2rem;
-    }
-    .bottom-glow {
-      position: absolute;
-      top: 0; left: 50%;
-      transform: translateX(-50%);
-      width: 500px; height: 400px;
-      background: radial-gradient(ellipse, rgba(0,201,167,0.06) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .bottom-headline {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(2.2rem, 5vw, 4rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-      margin-bottom: 1.25rem;
-    }
-    .bottom-headline em {
-      font-family: 'Instrument Serif', serif;
-      font-style: italic;
-      font-weight: 400;
-      color: var(--teal);
-    }
-    .bottom-sub {
-      color: var(--muted);
-      font-size: 0.9rem;
-      margin-bottom: 2.5rem;
-      max-width: 360px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.7;
-    }
-    .bottom-form-wrap {
-      display: flex;
-      justify-content: center;
-    }
-
-    /* FOOTER */
-    footer {
-      position: relative;
-      z-index: 1;
-      border-top: 1px solid var(--border);
-      padding: 2rem 2.5rem;
+    .placeholder-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
       gap: 1rem;
     }
-    .footer-logo {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 0.15rem;
-    }
-    .footer-logo-dot {
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: var(--teal-dim);
-      margin-bottom: 2px;
-    }
-    .footer-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-    .footer-link {
-      font-size: 0.7rem;
-      color: var(--muted);
-      text-decoration: none;
-      letter-spacing: 0.05em;
-      transition: color 0.2s;
-    }
-    .footer-link:hover { color: var(--text); }
-    .footer-note {
-      font-size: 0.68rem;
+    .placeholder-label {
+      font-size: 0.72rem;
       color: var(--muted2);
     }
-
-    /* ANIMATIONS */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes scrollBar {
-      0%, 100% { opacity: 0.2; transform: scaleY(0.8); }
-      50% { opacity: 1; transform: scaleY(1); }
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(0.8); }
+    .placeholder-bar {
+      height: 8px;
+      background: var(--surface2);
+      border-radius: 4px;
+      flex: 1;
     }
 
-    .reveal {
-      opacity: 1;
-      transform: translateY(0);
+    /* DASHBOARD CARD */
+    .dashboard {
+      display: none;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .dashboard.show { display: flex; }
+
+    /* Header */
+    .dash-header {
+      background: var(--bg);
+      padding: 1.5rem 1.75rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .dash-vehicle-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+    .dash-vehicle-meta {
+      font-size: 0.72rem;
+      color: var(--muted);
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .dash-vehicle-meta span { display: flex; align-items: center; gap: 0.3rem; }
+    .dash-vehicle-meta span::before { content: '·'; color: var(--muted2); }
+    .dash-vehicle-meta span:first-child::before { display: none; }
+    .dash-reg {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 0.4rem 0.75rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text);
+      white-space: nowrap;
     }
 
-    /* MOBILE */
-    @media (max-width: 700px) {
-      nav { padding: 1rem 1.25rem; }
-      .stat-bar { grid-template-columns: 1fr; }
-      .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
-      .stat-item:last-child { border-bottom: none; }
-      .steps-grid { grid-template-columns: 1fr; }
-      .compare-grid { grid-template-columns: 1fr; }
-      .asset-grid { grid-template-columns: repeat(2, 1fr); }
-      .capture-form { flex-direction: column; }
-      footer { flex-direction: column; text-align: center; }
-      .footer-links { justify-content: center; }
+    /* Section */
+    .dash-section {
+      background: var(--surface);
+      padding: 1.5rem 1.75rem;
+    }
+    .dash-section-label {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 1.25rem;
+    }
+
+    /* Value grid */
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .value-item {}
+    .value-label {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+    .value-number {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+    .value-number.primary { font-size: 1.5rem; color: var(--text); }
+    .value-number.muted { color: var(--muted); font-size: 1.1rem; }
+
+    /* Equity highlight */
+    .equity-block {
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .equity-amount {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--teal);
+    }
+    .equity-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+    .equity-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(0,201,167,0.08);
+      border: 1px solid rgba(0,201,167,0.25);
+      border-radius: 100px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--teal);
+      white-space: nowrap;
+    }
+    .equity-badge::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--teal);
+    }
+
+    /* Idle bar */
+    .idle-bar-wrap {
+      margin-bottom: 0.75rem;
+    }
+    .idle-bar-track {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+    .idle-bar-fill {
+      height: 100%;
+      background: var(--teal);
+      border-radius: 3px;
+      transition: width 1s ease;
+    }
+    .idle-bar-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+    .idle-stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 0.75rem;
+    }
+    .idle-stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .idle-stat-label {
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+
+    /* Yield rows */
+    .yield-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .yield-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: var(--surface2);
+      border-radius: 8px;
+    }
+    .yield-row-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .yield-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    .yield-name {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .yield-desc {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 0.1rem;
+    }
+    .yield-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--teal);
+      text-align: right;
+    }
+
+    /* Summary footer */
+    .dash-summary {
+      background: var(--bg);
+      padding: 1.25rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .summary-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .summary-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .summary-row.highlight .summary-label { color: var(--text); font-weight: 500; }
+    .summary-row.highlight .summary-value { color: var(--teal); font-size: 1rem; }
+
+    /* Disclaimer */
+    .disclaimer {
+      font-size: 0.65rem;
+      color: var(--muted2);
+      text-align: center;
+      margin-top: 1.25rem;
+      line-height: 1.6;
+    }
+
+    /* Waitlist CTA below dashboard */
+    .waitlist-cta {
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-top: 1rem;
+    }
+    .waitlist-cta.show { display: block; }
+    .waitlist-cta-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.01em;
+    }
+    .waitlist-cta-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+      line-height: 1.6;
+    }
+    .waitlist-form-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .waitlist-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      color: var(--text);
+      padding: 0.8rem 1rem;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .waitlist-input::placeholder { color: var(--muted2); }
+    .waitlist-input:focus { border-color: var(--teal-dim); }
+    .waitlist-btn {
+      background: var(--teal);
+      color: var(--bg);
+      border: none;
+      padding: 0.8rem 1.25rem;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .waitlist-btn:hover { background: #00dbb8; }
+    .waitlist-success {
+      display: none;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--teal);
+      font-size: 0.875rem;
+    }
+    .waitlist-success.show { display: flex; }
+    .waitlist-success-icon {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(6,8,10,0.3);
+      border-top-color: var(--bg);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 500px) {
+      .value-grid { grid-template-columns: 1fr 1fr; }
+      .waitlist-form-row { flex-direction: column; }
+      .input-row { flex-direction: column; }
     }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav id="nav">
-    <a href="#" class="nav-logo">unlo<div class="nav-logo-dot"></div></a>
-    <div class="nav-right">
-      <a href="/cars" style="color:var(--teal);font-size:0.78rem;text-decoration:none;letter-spacing:0.04em;font-family:'DM Sans',sans-serif;">→ See your car's value</a>
-      <span class="nav-badge">Private Beta</span>
-    </div>
+  <nav>
+    <a href="/" class="nav-logo">unlo<span class="nav-logo-dot"></span></a>
+    <a href="/" class="nav-back">← Back to Unlo</a>
   </nav>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero-glow"></div>
-
-    <div class="hero-eyebrow">
-      <div class="hero-eyebrow-dot"></div>
-      Asset liquidity platform · UK
-    </div>
-
-    <h1 class="hero-headline">
-      Your assets are<br />
-      <span class="hero-headline-italic">already worth money.</span><br />
-      We unlock it.
+  <main>
+    <p class="page-eyebrow">Asset mirror · Cars</p>
+    <h1 class="page-headline">
+      See what your car<br />
+      is <em>really worth.</em>
     </h1>
-
-    <p class="hero-sub">
-      Cars, watches, bikes, instruments. You own things sitting idle that are worth real money. Unlo turns them into liquidity — without making you sell them.
+    <p class="page-sub">
+      Enter your registration. We look up your vehicle from the DVLA register and show you your asset value, accessible equity, and what it could earn while it sits idle.
     </p>
 
-    <div class="capture-wrap" id="hero-form-wrap">
-      <div class="capture-form">
+    <!-- Input -->
+    <div class="input-card">
+      <label class="input-label" for="reg-input">UK Registration Number</label>
+      <div class="input-row">
         <input
-          type="email"
-          class="capture-input"
-          id="hero-email"
-          placeholder="Enter your email for early access"
-          autocomplete="email"
+          type="text"
+          id="reg-input"
+          class="reg-input"
+          placeholder="e.g. AB21 CDE"
+          maxlength="9"
+          autocomplete="off"
+          autocapitalize="characters"
         />
-        <button class="capture-btn" onclick="handleSignup('hero')">
-          Get access
+        <button class="lookup-btn" id="lookup-btn" onclick="handleLookup()">
+          <span id="btn-text">See dashboard</span>
+          <div class="spinner" id="btn-spinner" style="display:none"></div>
         </button>
       </div>
-      <p class="capture-note">No commitment · No spam · FCA regulated partners</p>
-      <p style="margin-top:1rem;text-align:center"><a href="/cars" style="color:var(--teal);font-size:0.82rem;text-decoration:none;letter-spacing:0.04em;opacity:0.85">→ See your car's value now</a></p>
+      <div class="error-msg" id="error-msg">
+        <span>⚠</span>
+        <span id="error-text">Please enter a valid registration number.</span>
+      </div>
+      <p class="input-note">UK registered vehicles only · DVLA data · Free to use</p>
     </div>
 
-    <div class="success-wrap" id="hero-success">
-      <div class="success-icon">✓</div>
-      <span class="success-text">You're on the list. We'll be in touch when we launch.</span>
-    </div>
-
-    <div class="scroll-cue">
-      <div class="scroll-cue-bar"></div>
-      <span class="scroll-cue-label">Scroll</span>
-    </div>
-  </section>
-
-  <!-- STAT BAR -->
-  <div class="stat-bar reveal">
-    <div class="stat-item">
-      <div class="stat-number">34<span>M</span></div>
-      <div class="stat-label">Cars sitting idle in the UK</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-number">95<span>%</span></div>
-      <div class="stat-label">Average asset idle time</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-number">£0<span>.01</span></div>
-      <div class="stat-label">Cost to unlock yours today</div>
-    </div>
-  </div>
-
-  <!-- QUOTE -->
-  <div class="quote-section">
-    <p class="big-quote reveal">
-      "Most people's second largest asset sits outside their house, <span>bleeding money</span>, 95% of the time. Nobody ever showed them how to make it work."
-    </p>
-    <p class="quote-attr reveal">The Unlo insight</p>
-  </div>
-
-  <!-- ASSET CLASSES -->
-  <div class="section">
-    <div class="reveal">
-      <div class="section-tag">What you can unlock</div>
-      <h2 class="section-heading">Every <em>idle asset</em> is liquidity you haven't accessed yet.</h2>
-    </div>
-
-    <div class="asset-grid reveal">
-      <div class="asset-card">
-        <div class="asset-icon">🚗</div>
-        <div class="asset-name">Cars</div>
-        <div class="asset-range">£2k – £80k</div>
-        <div class="asset-pill">Live</div>
-      </div>
-      <div class="asset-card">
-        <div class="asset-icon">⌚</div>
-        <div class="asset-name">Watches</div>
-        <div class="asset-range">£500 – £50k</div>
-        <div class="asset-pill soon">Soon</div>
-      </div>
-      <div class="asset-card">
-        <div class="asset-icon">🎸</div>
-        <div class="asset-name">Instruments</div>
-        <div class="asset-range">£300 – £20k</div>
-        <div class="asset-pill soon">Soon</div>
-      </div>
-      <div class="asset-card">
-        <div class="asset-icon">🚴</div>
-        <div class="asset-name">Bicycles</div>
-        <div class="asset-range">£500 – £12k</div>
-        <div class="asset-pill soon">Soon</div>
-      </div>
-      <div class="asset-card">
-        <div class="asset-icon">💍</div>
-        <div class="asset-name">Jewellery</div>
-        <div class="asset-range">£200 – £30k</div>
-        <div class="asset-pill soon">Soon</div>
-      </div>
-      <div class="asset-card">
-        <div class="asset-icon">📷</div>
-        <div class="asset-name">Cameras</div>
-        <div class="asset-range">£300 – £8k</div>
-        <div class="asset-pill soon">Soon</div>
-      </div>
-      <div class="asset-card">
-        <div class="asset-icon">🏕️</div>
-        <div class="asset-name">Caravans</div>
-        <div class="asset-range">£5k – £60k</div>
-        <div class="asset-pill soon">Soon</div>
-      </div>
-      <div class="asset-card">
-        <div class="asset-icon">🎨</div>
-        <div class="asset-name">Art</div>
-        <div class="asset-range">£500 – £100k</div>
-        <div class="asset-pill soon">Soon</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- HOW IT WORKS -->
-  <div class="section" style="padding-top: 0;">
-    <div class="reveal">
-      <div class="section-tag">How it works</div>
-      <h2 class="section-heading">Three steps.<br /><em>Under two minutes.</em></h2>
-    </div>
-
-    <div class="steps-grid reveal">
-      <div class="step-card">
-        <div class="step-teal-bar"></div>
-        <div class="step-num">STEP 01</div>
-        <div class="step-title">Tell us what you own</div>
-        <div class="step-desc">Enter your reg plate, serial number, or describe the asset. We verify it against live registries and valuation databases in seconds.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-teal-bar"></div>
-        <div class="step-num">STEP 02</div>
-        <div class="step-title">See your asset value</div>
-        <div class="step-desc">Instant current value, accessible equity at 60% LTV, and depreciation curve. No guesswork. No haggling. Just your number.</div>
-      </div>
-      <div class="step-card">
-        <div class="step-teal-bar"></div>
-        <div class="step-num">STEP 03</div>
-        <div class="step-title">Unlock your liquidity</div>
-        <div class="step-desc">Borrow against it, earn from it, or both. Funds in your account. Your asset stays exactly where it is.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- COMPARISON -->
-  <div class="section" style="padding-top: 0;">
-    <div class="reveal">
-      <div class="section-tag">The difference</div>
-      <h2 class="section-heading">Not a pawn shop.<br /><em>Not a loan shark.</em></h2>
-    </div>
-
-    <div class="compare-grid reveal">
-      <div class="compare-col">
-        <div class="compare-col-header">Traditional pawn</div>
-        <div class="compare-row"><div class="compare-marker"></div>Hand over your asset physically</div>
-        <div class="compare-row"><div class="compare-marker"></div>Arbitrary valuations, no transparency</div>
-        <div class="compare-row"><div class="compare-marker"></div>200–400% APR as standard</div>
-        <div class="compare-row"><div class="compare-marker"></div>Walk into a shopfront</div>
-        <div class="compare-row"><div class="compare-marker"></div>One asset class only</div>
-        <div class="compare-row"><div class="compare-marker"></div>Social stigma attached</div>
-      </div>
-      <div class="compare-col unlo-col">
-        <div class="compare-col-header">Unlo</div>
-        <div class="compare-row"><div class="compare-marker">✓</div>Asset stays with you unless you choose otherwise</div>
-        <div class="compare-row"><div class="compare-marker">✓</div>Live registry data and forward valuation curves</div>
-        <div class="compare-row"><div class="compare-marker">✓</div>Fair rates, matched to FCA regulated lenders</div>
-        <div class="compare-row"><div class="compare-marker">✓</div>Entirely online, under two minutes</div>
-        <div class="compare-row"><div class="compare-marker">✓</div>Cars, watches, bikes, instruments and more</div>
-        <div class="compare-row"><div class="compare-marker">✓</div>You're not borrowing. You're unlocking.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOTTOM CTA -->
-  <div class="bottom-cta">
-    <div class="bottom-glow"></div>
-    <h2 class="bottom-headline reveal">
-      Stop letting your<br />assets <em>sleep.</em>
-    </h2>
-    <p class="bottom-sub reveal">
-      Join the Unlo private beta. Be first to unlock what you already own.
-    </p>
-
-    <div class="bottom-form-wrap">
-      <div class="capture-wrap reveal" id="bottom-form-wrap">
-        <div class="capture-form">
-          <input
-            type="email"
-            class="capture-input"
-            id="bottom-email"
-            placeholder="your@email.com"
-            autocomplete="email"
-          />
-          <button class="capture-btn" onclick="handleSignup('bottom')">
-            Join the beta
-          </button>
+    <!-- Placeholder -->
+    <div class="placeholder-state" id="placeholder-state">
+      <p style="font-size:0.75rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;">Your dashboard appears here</p>
+      <div class="placeholder-lines">
+        <div class="placeholder-row">
+          <span class="placeholder-label">Current value</span>
+          <div class="placeholder-bar"></div>
         </div>
-        <p class="capture-note">UK residents only · No commitment · FCA regulated partners</p>
+        <div class="placeholder-row">
+          <span class="placeholder-label">Accessible equity</span>
+          <div class="placeholder-bar"></div>
+        </div>
+        <div class="placeholder-row">
+          <span class="placeholder-label">Yield potential</span>
+          <div class="placeholder-bar"></div>
+        </div>
+        <div class="placeholder-row">
+          <span class="placeholder-label">Idle time</span>
+          <div class="placeholder-bar"></div>
+        </div>
       </div>
     </div>
 
-    <div class="success-wrap" id="bottom-success" style="margin: 0 auto; max-width: 440px;">
-      <div class="success-icon">✓</div>
-      <span class="success-text">You're on the list. We'll be in touch when we launch.</span>
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+
+      <!-- Header -->
+      <div class="dash-header">
+        <div>
+          <div class="dash-vehicle-name" id="d-name">2021 Ford Focus</div>
+          <div class="dash-vehicle-meta">
+            <span id="d-colour">White</span>
+            <span id="d-fuel">Petrol</span>
+            <span id="d-engine">1.0L</span>
+          </div>
+        </div>
+        <div class="dash-reg" id="d-reg">AB21CDE</div>
+      </div>
+
+      <!-- Asset Value -->
+      <div class="dash-section">
+        <div class="dash-section-label">Asset Value</div>
+        <div class="value-grid">
+          <div class="value-item">
+            <div class="value-label">Current</div>
+            <div class="value-number primary" id="d-current">£9,200</div>
+          </div>
+          <div class="value-item">
+            <div class="value-label">In 12 months</div>
+            <div class="value-number muted" id="d-12m">£7,800</div>
+          </div>
+          <div class="value-item">
+            <div class="value-label">In 24 months</div>
+            <div class="value-number muted" id="d-24m">£6,600</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Equity -->
+      <div class="dash-section">
+        <div class="dash-section-label">Accessible Equity</div>
+        <div class="equity-block">
+          <div>
+            <div class="equity-amount" id="d-equity">£5,520</div>
+            <div class="equity-label" id="d-equity-label">at 60% LTV — available today</div>
+          </div>
+          <div class="equity-badge">Eligible</div>
+        </div>
+      </div>
+
+      <!-- Idle Time -->
+      <div class="dash-section">
+        <div class="dash-section-label">Utilisation</div>
+        <div class="idle-bar-wrap">
+          <div class="idle-bar-track">
+            <div class="idle-bar-fill" id="d-idle-bar" style="width:95%"></div>
+          </div>
+          <div class="idle-bar-labels">
+            <span>Idle 95%</span>
+            <span>Used 5%</span>
+          </div>
+        </div>
+        <div class="idle-stats">
+          <div>
+            <div class="idle-stat-value" id="d-idle-hours">8,322</div>
+            <div class="idle-stat-label">hours idle per year</div>
+          </div>
+          <div>
+            <div class="idle-stat-value">95%</div>
+            <div class="idle-stat-label">average idle time</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Yield -->
+      <div class="dash-section">
+        <div class="dash-section-label">Potential Monthly Yield</div>
+        <div class="yield-rows">
+          <div class="yield-row">
+            <div class="yield-row-left">
+              <div class="yield-icon">🏦</div>
+              <div>
+                <div class="yield-name">Borrow against it</div>
+                <div class="yield-desc">Asset-backed credit line</div>
+              </div>
+            </div>
+            <div class="yield-value" id="d-borrow">£5,520 available</div>
+          </div>
+          <div class="yield-row">
+            <div class="yield-row-left">
+              <div class="yield-icon">🚗</div>
+              <div>
+                <div class="yield-name">Rent it out</div>
+                <div class="yield-desc">Peer-to-peer rental</div>
+              </div>
+            </div>
+            <div class="yield-value" id="d-rental">£240–£380/mo</div>
+          </div>
+          <div class="yield-row">
+            <div class="yield-row-left">
+              <div class="yield-icon">🅿️</div>
+              <div>
+                <div class="yield-name">Rent your driveway</div>
+                <div class="yield-desc">Parking space income</div>
+              </div>
+            </div>
+            <div class="yield-value">£80–£150/mo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="dash-summary">
+        <div class="summary-row highlight">
+          <span class="summary-label">Your car could return</span>
+          <span class="summary-value" id="d-yield-total">£320–£530/mo</span>
+        </div>
+        <div class="summary-row">
+          <span class="summary-label">Instead it costs you</span>
+          <span class="summary-value" id="d-running-cost">~£420/mo to run</span>
+        </div>
+      </div>
+
     </div>
-  </div>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-logo">unlo<div class="footer-logo-dot"></div></div>
-    <div class="footer-links">
-      <a href="#" class="footer-link">Privacy</a>
-      <a href="#" class="footer-link">Terms</a>
-      <a href="/cdn-cgi/l/email-protection#ee868b828281ae9b808281c08d81c09b85" class="footer-link">Contact</a>
+    <!-- Disclaimer -->
+    <p class="disclaimer" id="disclaimer" style="display:none">
+      Estimates for illustration only. Not financial advice. Final lending, rental, and valuation outcomes may vary.
+    </p>
+
+    <!-- Waitlist CTA -->
+    <div class="waitlist-cta" id="waitlist-cta">
+      <div class="waitlist-cta-title">Want to actually unlock this?</div>
+      <div class="waitlist-cta-sub">Join the Unlo waitlist. Be first to borrow against your car, rent it out, and turn it from a cost into an asset.</div>
+      <div id="waitlist-form-wrap">
+        <div class="waitlist-form-row">
+          <input type="email" class="waitlist-input" id="waitlist-email" placeholder="your@email.com" />
+          <button class="waitlist-btn" onclick="handleWaitlist()">Join waitlist</button>
+        </div>
+      </div>
+      <div class="waitlist-success" id="waitlist-success">
+        <div class="waitlist-success-icon">✓</div>
+        <span>You're on the list. We'll be in touch.</span>
+      </div>
     </div>
-    <div class="footer-note">Estimates only. Not financial advice. © 2026 Unlo.</div>
-  </footer>
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-    // Nav scroll
-    const nav = document.getElementById('nav')
-    window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 50)
-    }, { passive: true })
+  </main>
 
-    // Scroll reveal
-    const reveals = document.querySelectorAll('.reveal')
-    const ro = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('in')
-          ro.unobserve(e.target)
+  <script>
+    // ─── Valuation logic ───────────────────────────────────────────────────────
+    const MAKE_TIER = {
+      MERCEDES:1.5,BMW:1.45,AUDI:1.4,PORSCHE:2.0,LEXUS:1.35,VOLVO:1.3,
+      JAGUAR:1.3,'LAND ROVER':1.5,TESLA:1.6,VOLKSWAGEN:1.15,SKODA:1.1,
+      SEAT:1.05,HONDA:1.1,TOYOTA:1.15,MAZDA:1.1,FORD:1.0,VAUXHALL:0.95,
+      PEUGEOT:0.95,RENAULT:0.95,CITROEN:0.9,NISSAN:1.0,KIA:1.0,
+      HYUNDAI:1.0,FIAT:0.9,DACIA:0.85,MG:0.9,SUBARU:1.1
+    }
+    const FUEL_MULT = {
+      ELECTRIC:1.25,HYBRID:1.15,'PLUG-IN HYBRID ELECTRIC':1.2,
+      PETROL:1.0,DIESEL:0.92,UNKNOWN:1.0
+    }
+    const DEPRECIATION = {
+      ELECTRIC:0.12,HYBRID:0.14,'PLUG-IN HYBRID ELECTRIC':0.13,
+      PETROL:0.15,DIESEL:0.17,UNKNOWN:0.15
+    }
+
+    function engineBase(cc) {
+      if (!cc) return 12000
+      if (cc <= 999) return 9000
+      if (cc <= 1399) return 11000
+      if (cc <= 1999) return 14000
+      if (cc <= 2499) return 18000
+      if (cc <= 3499) return 24000
+      return 32000
+    }
+
+    function roundTo(v, n) { return Math.round(v / n) * n }
+    function clamp(v, min, max) { return Math.min(Math.max(v, min), max) }
+
+    function fmt(n) {
+      return '£' + n.toLocaleString('en-GB')
+    }
+
+    function computeValuation(vehicle) {
+      const year = new Date().getFullYear()
+      const age = year - vehicle.yearOfManufacture
+      const make = (vehicle.make || '').toUpperCase()
+      const fuel = (vehicle.fuelType || 'UNKNOWN').toUpperCase()
+
+      const base = engineBase(vehicle.engineCapacity)
+      const makeMult = MAKE_TIER[make] ?? 1.0
+      const fuelMult = FUEL_MULT[fuel] ?? 1.0
+      const annualRate = DEPRECIATION[fuel] ?? 0.15
+      const ageFactor = Math.pow(1 - annualRate, clamp(age, 0, 20))
+
+      let current = base * makeMult * fuelMult * ageFactor
+      current = clamp(current, 1500, 80000)
+      current = roundTo(current, 50)
+
+      const ltv = 0.6
+      const equity = roundTo(current * ltv, 50)
+      const v12 = roundTo(current * (1 - annualRate), 50)
+      const v24 = roundTo(current * Math.pow(1 - annualRate, 2), 50)
+
+      const rentalLow = clamp(roundTo(current * 0.0015 * 10, 10), 150, 1200)
+      const rentalHigh = clamp(roundTo(current * 0.0025 * 10, 10), 200, 1800)
+      const totalLow = rentalLow + 80
+      const totalHigh = rentalHigh + 150
+      const running = roundTo((current * 0.045) / 12, 10)
+
+      const engineLitres = vehicle.engineCapacity
+        ? `${(vehicle.engineCapacity / 1000).toFixed(1)}L`
+        : ''
+      const displayName = `${vehicle.yearOfManufacture} ${vehicle.make} ${engineLitres}`.trim()
+
+      return { displayName, current, equity, v12, v24, rentalLow, rentalHigh,
+               totalLow, totalHigh, running, ltv, engineLitres }
+    }
+
+    // ─── Lookup ─────────────────────────────────────────────────────────────────
+    const regInput = document.getElementById('reg-input')
+    const lookupBtn = document.getElementById('lookup-btn')
+    const btnText = document.getElementById('btn-text')
+    const btnSpinner = document.getElementById('btn-spinner')
+    const errorEl = document.getElementById('error-msg')
+    const errorText = document.getElementById('error-text')
+
+    regInput.addEventListener('input', () => {
+      regInput.value = regInput.value.replace(/[^A-Z0-9 ]/gi, '').toUpperCase()
+    })
+    regInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleLookup()
+    })
+
+    function showError(msg) {
+      errorText.textContent = msg
+      errorEl.classList.add('show')
+    }
+    function hideError() { errorEl.classList.remove('show') }
+
+    async function handleLookup() {
+      hideError()
+      const raw = regInput.value.trim()
+      const reg = raw.replace(/[^A-Z0-9]/gi, '').toUpperCase()
+
+      if (!reg) { showError('Please enter your registration number.'); return }
+      if (reg.length < 2 || reg.length > 8) { showError('Please enter a valid UK registration number.'); return }
+
+      lookupBtn.disabled = true
+      btnText.style.display = 'none'
+      btnSpinner.style.display = 'block'
+
+      try {
+        const response = await fetch('/api/lookup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ registrationNumber: reg })
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          showError(data.error || 'Vehicle not found. Check the registration number.')
+          return
         }
-      })
-    }, { threshold: 0.0, rootMargin: '0px 0px 0px 0px' })
-    reveals.forEach(el => ro.observe(el))
-    setTimeout(() => {
-      reveals.forEach(el => {
-        const rect = el.getBoundingClientRect()
-        if (rect.top < window.innerHeight) el.classList.add('in')
-      })
-    }, 100)
 
-    // Signup handler
-    async function handleSignup(source) {
-      const emailEl = document.getElementById(source + '-email')
-      const formWrap = document.getElementById(source + '-form-wrap')
-      const successEl = document.getElementById(source + '-success')
-      const email = emailEl ? emailEl.value.trim() : ''
+        renderDashboard(reg, data)
 
+      } catch(e) {
+        showError('Network error. Please check your connection and try again.')
+      } finally {
+        lookupBtn.disabled = false
+        btnText.style.display = 'block'
+        btnSpinner.style.display = 'none'
+      }
+    }
+
+    function renderDashboard(reg, vehicle) {
+      const v = computeValuation(vehicle)
+
+      // Header
+      document.getElementById('d-name').textContent = v.displayName
+      document.getElementById('d-reg').textContent = reg
+      document.getElementById('d-colour').textContent = vehicle.colour || ''
+      document.getElementById('d-fuel').textContent = vehicle.fuelType || ''
+      document.getElementById('d-engine').textContent = v.engineLitres
+
+      // Values
+      document.getElementById('d-current').textContent = fmt(v.current)
+      document.getElementById('d-12m').textContent = fmt(v.v12)
+      document.getElementById('d-24m').textContent = fmt(v.v24)
+
+      // Equity
+      document.getElementById('d-equity').textContent = fmt(v.equity)
+      document.getElementById('d-equity-label').textContent =
+        `at ${Math.round(v.ltv * 100)}% LTV — available today`
+
+      // Idle
+      document.getElementById('d-idle-hours').textContent =
+        Math.round(24 * 365 * 0.95).toLocaleString('en-GB')
+
+      // Yield
+      document.getElementById('d-borrow').textContent = `${fmt(v.equity)} available`
+      document.getElementById('d-rental').textContent =
+        `${fmt(v.rentalLow)}–${fmt(v.rentalHigh)}/mo`
+
+      // Summary
+      document.getElementById('d-yield-total').textContent =
+        `${fmt(v.totalLow)}–${fmt(v.totalHigh)}/mo`
+      document.getElementById('d-running-cost').textContent =
+        `~${fmt(v.running)}/mo to run`
+
+      // Show / hide
+      document.getElementById('placeholder-state').style.display = 'none'
+      document.getElementById('dashboard').classList.add('show')
+      document.getElementById('disclaimer').style.display = 'block'
+      document.getElementById('waitlist-cta').classList.add('show')
+
+      // Scroll to dashboard
+      setTimeout(() => {
+        document.getElementById('dashboard').scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
+    }
+
+    // ─── Waitlist ────────────────────────────────────────────────────────────────
+    async function handleWaitlist() {
+      const emailEl = document.getElementById('waitlist-email')
+      const email = emailEl.value.trim()
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        if (emailEl) {
-          emailEl.style.outline = '1.5px solid #e05555'
-          emailEl.focus()
-          setTimeout(() => emailEl.style.outline = '', 1800)
-        }
+        emailEl.style.borderColor = 'var(--red)'
+        setTimeout(() => emailEl.style.borderColor = '', 1500)
         return
       }
-
-      // POST to Tally waitlist
       try {
         await fetch('https://api.tally.so/r/5zi7qoc5xyc', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
         })
-      } catch(e) { /* fail silently */ }
-      if (formWrap) formWrap.style.display = 'none'
-      if (successEl) successEl.classList.add('show')
+      } catch(e) {}
+      document.getElementById('waitlist-form-wrap').style.display = 'none'
+      document.getElementById('waitlist-success').classList.add('show')
     }
 
-    // Enter key
-    document.querySelectorAll('.capture-input').forEach(input => {
-      input.addEventListener('keydown', e => {
-        if (e.key === 'Enter') {
-          handleSignup(input.id.split('-')[0])
-        }
-      })
+    document.getElementById('waitlist-email')?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleWaitlist()
     })
   </script>
 
