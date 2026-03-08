@@ -939,7 +939,7 @@
     }, 100)
 
     // Signup handler
-    function handleSignup(source) {
+    async function handleSignup(source) {
       const emailEl = document.getElementById(source + '-email')
       const formWrap = document.getElementById(source + '-form-wrap')
       const successEl = document.getElementById(source + '-success')
@@ -954,7 +954,14 @@
         return
       }
 
-      // In production: POST to /api/waitlist
+      // POST to Tally waitlist
+      try {
+        await fetch('https://api.tally.so/r/5zi7qoc5xyc', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        })
+      } catch(e) { /* fail silently */ }
       if (formWrap) formWrap.style.display = 'none'
       if (successEl) successEl.classList.add('show')
     }
