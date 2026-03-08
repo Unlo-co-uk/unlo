@@ -713,8 +713,7 @@
           Get access
         </button>
       </div>
-            <p class="capture-note">No commitment · No spam · FCA regulated partners</p>
-            <p style="margin-top:1.25rem"><a href="/cars" style="color:var(--teal);font-size:0.82rem;text-decoration:none;letter-spacing:0.05em;">→ See your car's value now</a></p>
+      <p class="capture-note">No commitment · No spam · FCA regulated partners</p>
     </div>
 
     <div class="success-wrap" id="hero-success">
@@ -940,7 +939,7 @@
     }, 100)
 
     // Signup handler
-    async function handleSignup(source) {
+    function handleSignup(source) {
       const emailEl = document.getElementById(source + '-email')
       const formWrap = document.getElementById(source + '-form-wrap')
       const successEl = document.getElementById(source + '-success')
@@ -955,14 +954,7 @@
         return
       }
 
-      // POST to Tally waitlist
-      try {
-        await fetch('https://api.tally.so/r/5zi7qoc5xyc', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
-        })
-      } catch(e) { /* fail silently */ }
+      // In production: POST to /api/waitlist
       if (formWrap) formWrap.style.display = 'none'
       if (successEl) successEl.classList.add('show')
     }
