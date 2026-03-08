@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unlo — Unlock what you own</title>
+  <meta name="description" content="Your car, watch, bike or instrument is worth money. Unlo turns idle assets into liquidity — without making you sell them." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #06080A;
+      --surface: #0D1117;
+      --surface2: #131920;
+      --border: #1E2730;
+      --border2: #2a3540;
+      --teal: #00C9A7;
+      --teal-dim: #007D68;
+      --teal-faint: rgba(0,201,167,0.06);
+      --text: #E8F0F5;
+      --muted: #5A7080;
+      --muted2: #2A3A45;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,201,167,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,201,167,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.25rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.3s, border-color 0.3s;
+      border-bottom: 1px solid transparent;
+    }
+    nav.scrolled {
+      background: rgba(6,8,10,0.94);
+      backdrop-filter: blur(16px);
+      border-color: var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.15rem;
+    }
+    .nav-logo-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--teal);
+      margin-left: 1px;
+      margin-bottom: 2px;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .nav-badge {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--teal);
+      border: 1px solid var(--teal-dim);
+      padding: 0.3rem 0.7rem;
+      border-radius: 100px;
+      background: var(--teal-faint);
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 5rem;
+    }
+
+    /* Glow */
+    .hero-glow {
+      position: absolute;
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(0,201,167,0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.1s;
+    }
+    .hero-eyebrow-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .hero-headline {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.8rem, 7.5vw, 6rem);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      max-width: 860px;
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.25s;
+    }
+
+    .hero-headline-italic {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--teal);
+      letter-spacing: -0.01em;
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--muted);
+      max-width: 420px;
+      line-height: 1.75;
+      margin: 1.75rem auto 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.4s;
+    }
+
+    /* EMAIL CAPTURE */
+    .capture-wrap {
+      width: 100%;
+      max-width: 440px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease forwards 0.55s;
+    }
+    .capture-form {
+      display: flex;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 0.4rem;
+    }
+    .capture-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      padding: 0.7rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 300;
+      outline: none;
+    }
+    .capture-input::placeholder { color: var(--muted2); }
+    .capture-btn {
+      background: var(--teal);
+      color: var(--bg);
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 5px;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .capture-btn:hover { background: #00dbb8; }
+    .capture-btn:active { transform: scale(0.97); }
+
+    .capture-note {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 0.85rem;
+      letter-spacing: 0.04em;
+    }
+
+    /* SUCCESS */
+    .success-wrap {
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(0,201,167,0.07);
+      border: 1px solid rgba(0,201,167,0.25);
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      max-width: 440px;
+      width: 100%;
+    }
+    .success-wrap.show { display: flex; }
+    .success-icon {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--teal);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem;
+      color: var(--bg);
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+    .success-text { font-size: 0.875rem; color: var(--text); }
+
+    /* SCROLL CUE */
+    .scroll-cue {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 1s ease forwards 1.2s;
+    }
+    .scroll-cue-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .scroll-cue-bar {
+      width: 1px;
+      height: 44px;
+      background: linear-gradient(to bottom, var(--teal-dim), transparent);
+      animation: scrollBar 2.2s ease-in-out infinite;
+    }
+
+    /* STAT BAR */
+    .stat-bar {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .stat-item {
+      padding: 2.25rem 2rem;
+      border-right: 1px solid var(--border);
+      text-align: center;
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-number {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+    .stat-number span { color: var(--teal); }
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* SECTIONS */
+    .section {
+      position: relative;
+      z-index: 1;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 6rem 2rem;
+    }
+
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 1.25rem;
+    }
+    .section-tag::before {
+      content: '';
+      display: block;
+      width: 18px;
+      height: 1px;
+      background: var(--teal-dim);
+    }
+
+    .section-heading {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.1;
+      color: var(--text);
+      max-width: 560px;
+    }
+    .section-heading em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--teal);
+    }
+
+    /* ASSET GRID */
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 3rem;
+    }
+    .asset-card {
+      background: var(--surface);
+      padding: 1.75rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      transition: background 0.2s;
+      cursor: default;
+    }
+    .asset-card:hover { background: var(--surface2); }
+    .asset-icon { font-size: 1.6rem; line-height: 1; }
+    .asset-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .asset-range {
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+    .asset-pill {
+      display: inline-block;
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal);
+      background: var(--teal-faint);
+      border: 1px solid rgba(0,201,167,0.2);
+      padding: 0.2rem 0.55rem;
+      border-radius: 100px;
+      width: fit-content;
+    }
+    .asset-pill.soon {
+      color: var(--muted);
+      background: transparent;
+      border-color: var(--border2);
+    }
+
+    /* HOW IT WORKS */
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 3rem;
+    }
+    .step-card {
+      background: var(--surface);
+      padding: 2.5rem 2rem;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .step-card:hover { background: var(--surface2); }
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--teal);
+      margin-bottom: 2rem;
+    }
+    .step-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+    .step-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    .step-teal-bar {
+      position: absolute;
+      top: 0; left: 0;
+      width: 2px;
+      height: 100%;
+      background: var(--teal-dim);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .step-card:hover .step-teal-bar { opacity: 1; }
+
+    /* COMPARISON */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 3rem;
+    }
+    .compare-col {
+      background: var(--surface);
+      padding: 2.5rem 2rem;
+    }
+    .compare-col.unlo-col { background: var(--surface2); }
+    .compare-col-header {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-bottom: 1.25rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .unlo-col .compare-col-header {
+      color: var(--teal);
+      border-color: var(--border2);
+    }
+    .compare-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.9rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .unlo-col .compare-row { color: var(--text); }
+    .compare-marker {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid var(--muted2);
+      flex-shrink: 0;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      color: transparent;
+    }
+    .unlo-col .compare-marker {
+      background: var(--teal-faint);
+      border-color: var(--teal-dim);
+      color: var(--teal);
+    }
+
+    /* BIG QUOTE */
+    .quote-section {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      padding: 5rem 2rem;
+      text-align: center;
+    }
+    .big-quote {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: clamp(1.6rem, 3.5vw, 2.75rem);
+      font-weight: 400;
+      line-height: 1.35;
+      color: var(--text);
+      max-width: 780px;
+      margin: 0 auto 1.25rem;
+    }
+    .big-quote span { color: var(--teal); }
+    .quote-attr {
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* BOTTOM CTA */
+    .bottom-cta {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 7rem 2rem;
+    }
+    .bottom-glow {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 400px;
+      background: radial-gradient(ellipse, rgba(0,201,167,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .bottom-headline {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-bottom: 1.25rem;
+    }
+    .bottom-headline em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--teal);
+    }
+    .bottom-sub {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 2.5rem;
+      max-width: 360px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.7;
+    }
+    .bottom-form-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.15rem;
+    }
+    .footer-logo-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--teal-dim);
+      margin-bottom: 2px;
+    }
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    .footer-link {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+      transition: color 0.2s;
+    }
+    .footer-link:hover { color: var(--text); }
+    .footer-note {
+      font-size: 0.68rem;
+      color: var(--muted2);
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scrollBar {
+      0%, 100% { opacity: 0.2; transform: scaleY(0.8); }
+      50% { opacity: 1; transform: scaleY(1); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .reveal {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* MOBILE */
+    @media (max-width: 700px) {
+      nav { padding: 1rem 1.25rem; }
+      .stat-bar { grid-template-columns: 1fr; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat-item:last-child { border-bottom: none; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .compare-grid { grid-template-columns: 1fr; }
+      .asset-grid { grid-template-columns: repeat(2, 1fr); }
+      .capture-form { flex-direction: column; }
+      footer { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">unlo<div class="nav-logo-dot"></div></a>
+    <div class="nav-right">
+      <a href="/cars" style="color:var(--teal);font-size:0.78rem;text-decoration:none;letter-spacing:0.04em;font-family:'DM Sans',sans-serif;">→ See your car's value</a>
+      <span class="nav-badge">Private Beta</span>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-dot"></div>
+      Asset liquidity platform · UK
+    </div>
+
+    <h1 class="hero-headline">
+      Your assets are<br />
+      <span class="hero-headline-italic">already worth money.</span><br />
+      We unlock it.
+    </h1>
+
+    <p class="hero-sub">
+      Cars, watches, bikes, instruments. You own things sitting idle that are worth real money. Unlo turns them into liquidity — without making you sell them.
+    </p>
+
+    <div class="capture-wrap" id="hero-form-wrap">
+      <div class="capture-form">
+        <input
+          type="email"
+          class="capture-input"
+          id="hero-email"
+          placeholder="Enter your email for early access"
+          autocomplete="email"
+        />
+        <button class="capture-btn" onclick="handleSignup('hero')">
+          Get access
+        </button>
+      </div>
+      <p class="capture-note">No commitment · No spam · FCA regulated partners</p>
+      <p style="margin-top:1rem;text-align:center"><a href="/cars" style="color:var(--teal);font-size:0.82rem;text-decoration:none;letter-spacing:0.04em;opacity:0.85">→ See your car's value now</a></p>
+    </div>
+
+    <div class="success-wrap" id="hero-success">
+      <div class="success-icon">✓</div>
+      <span class="success-text">You're on the list. We'll be in touch when we launch.</span>
+    </div>
+
+    <div class="scroll-cue">
+      <div class="scroll-cue-bar"></div>
+      <span class="scroll-cue-label">Scroll</span>
+    </div>
+  </section>
+
+  <!-- STAT BAR -->
+  <div class="stat-bar reveal">
+    <div class="stat-item">
+      <div class="stat-number">34<span>M</span></div>
+      <div class="stat-label">Cars sitting idle in the UK</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">95<span>%</span></div>
+      <div class="stat-label">Average asset idle time</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">£0<span>.01</span></div>
+      <div class="stat-label">Cost to unlock yours today</div>
+    </div>
+  </div>
+
+  <!-- QUOTE -->
+  <div class="quote-section">
+    <p class="big-quote reveal">
+      "Most people's second largest asset sits outside their house, <span>bleeding money</span>, 95% of the time. Nobody ever showed them how to make it work."
+    </p>
+    <p class="quote-attr reveal">The Unlo insight</p>
+  </div>
+
+  <!-- ASSET CLASSES -->
+  <div class="section">
+    <div class="reveal">
+      <div class="section-tag">What you can unlock</div>
+      <h2 class="section-heading">Every <em>idle asset</em> is liquidity you haven't accessed yet.</h2>
+    </div>
+
+    <div class="asset-grid reveal">
+      <div class="asset-card">
+        <div class="asset-icon">🚗</div>
+        <div class="asset-name">Cars</div>
+        <div class="asset-range">£2k – £80k</div>
+        <div class="asset-pill">Live</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-icon">⌚</div>
+        <div class="asset-name">Watches</div>
+        <div class="asset-range">£500 – £50k</div>
+        <div class="asset-pill soon">Soon</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-icon">🎸</div>
+        <div class="asset-name">Instruments</div>
+        <div class="asset-range">£300 – £20k</div>
+        <div class="asset-pill soon">Soon</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-icon">🚴</div>
+        <div class="asset-name">Bicycles</div>
+        <div class="asset-range">£500 – £12k</div>
+        <div class="asset-pill soon">Soon</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-icon">💍</div>
+        <div class="asset-name">Jewellery</div>
+        <div class="asset-range">£200 – £30k</div>
+        <div class="asset-pill soon">Soon</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-icon">📷</div>
+        <div class="asset-name">Cameras</div>
+        <div class="asset-range">£300 – £8k</div>
+        <div class="asset-pill soon">Soon</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-icon">🏕️</div>
+        <div class="asset-name">Caravans</div>
+        <div class="asset-range">£5k – £60k</div>
+        <div class="asset-pill soon">Soon</div>
+      </div>
+      <div class="asset-card">
+        <div class="asset-icon">🎨</div>
+        <div class="asset-name">Art</div>
+        <div class="asset-range">£500 – £100k</div>
+        <div class="asset-pill soon">Soon</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="section" style="padding-top: 0;">
+    <div class="reveal">
+      <div class="section-tag">How it works</div>
+      <h2 class="section-heading">Three steps.<br /><em>Under two minutes.</em></h2>
+    </div>
+
+    <div class="steps-grid reveal">
+      <div class="step-card">
+        <div class="step-teal-bar"></div>
+        <div class="step-num">STEP 01</div>
+        <div class="step-title">Tell us what you own</div>
+        <div class="step-desc">Enter your reg plate, serial number, or describe the asset. We verify it against live registries and valuation databases in seconds.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-teal-bar"></div>
+        <div class="step-num">STEP 02</div>
+        <div class="step-title">See your asset value</div>
+        <div class="step-desc">Instant current value, accessible equity at 60% LTV, and depreciation curve. No guesswork. No haggling. Just your number.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-teal-bar"></div>
+        <div class="step-num">STEP 03</div>
+        <div class="step-title">Unlock your liquidity</div>
+        <div class="step-desc">Borrow against it, earn from it, or both. Funds in your account. Your asset stays exactly where it is.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARISON -->
+  <div class="section" style="padding-top: 0;">
+    <div class="reveal">
+      <div class="section-tag">The difference</div>
+      <h2 class="section-heading">Not a pawn shop.<br /><em>Not a loan shark.</em></h2>
+    </div>
+
+    <div class="compare-grid reveal">
+      <div class="compare-col">
+        <div class="compare-col-header">Traditional pawn</div>
+        <div class="compare-row"><div class="compare-marker"></div>Hand over your asset physically</div>
+        <div class="compare-row"><div class="compare-marker"></div>Arbitrary valuations, no transparency</div>
+        <div class="compare-row"><div class="compare-marker"></div>200–400% APR as standard</div>
+        <div class="compare-row"><div class="compare-marker"></div>Walk into a shopfront</div>
+        <div class="compare-row"><div class="compare-marker"></div>One asset class only</div>
+        <div class="compare-row"><div class="compare-marker"></div>Social stigma attached</div>
+      </div>
+      <div class="compare-col unlo-col">
+        <div class="compare-col-header">Unlo</div>
+        <div class="compare-row"><div class="compare-marker">✓</div>Asset stays with you unless you choose otherwise</div>
+        <div class="compare-row"><div class="compare-marker">✓</div>Live registry data and forward valuation curves</div>
+        <div class="compare-row"><div class="compare-marker">✓</div>Fair rates, matched to FCA regulated lenders</div>
+        <div class="compare-row"><div class="compare-marker">✓</div>Entirely online, under two minutes</div>
+        <div class="compare-row"><div class="compare-marker">✓</div>Cars, watches, bikes, instruments and more</div>
+        <div class="compare-row"><div class="compare-marker">✓</div>You're not borrowing. You're unlocking.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM CTA -->
+  <div class="bottom-cta">
+    <div class="bottom-glow"></div>
+    <h2 class="bottom-headline reveal">
+      Stop letting your<br />assets <em>sleep.</em>
+    </h2>
+    <p class="bottom-sub reveal">
+      Join the Unlo private beta. Be first to unlock what you already own.
+    </p>
+
+    <div class="bottom-form-wrap">
+      <div class="capture-wrap reveal" id="bottom-form-wrap">
+        <div class="capture-form">
+          <input
+            type="email"
+            class="capture-input"
+            id="bottom-email"
+            placeholder="your@email.com"
+            autocomplete="email"
+          />
+          <button class="capture-btn" onclick="handleSignup('bottom')">
+            Join the beta
+          </button>
+        </div>
+        <p class="capture-note">UK residents only · No commitment · FCA regulated partners</p>
+      </div>
+    </div>
+
+    <div class="success-wrap" id="bottom-success" style="margin: 0 auto; max-width: 440px;">
+      <div class="success-icon">✓</div>
+      <span class="success-text">You're on the list. We'll be in touch when we launch.</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">unlo<div class="footer-logo-dot"></div></div>
+    <div class="footer-links">
+      <a href="#" class="footer-link">Privacy</a>
+      <a href="#" class="footer-link">Terms</a>
+      <a href="/cdn-cgi/l/email-protection#ee868b828281ae9b808281c08d81c09b85" class="footer-link">Contact</a>
+    </div>
+    <div class="footer-note">Estimates only. Not financial advice. © 2026 Unlo.</div>
+  </footer>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // Nav scroll
+    const nav = document.getElementById('nav')
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 50)
+    }, { passive: true })
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal')
+    const ro = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in')
+          ro.unobserve(e.target)
+        }
+      })
+    }, { threshold: 0.0, rootMargin: '0px 0px 0px 0px' })
+    reveals.forEach(el => ro.observe(el))
+    setTimeout(() => {
+      reveals.forEach(el => {
+        const rect = el.getBoundingClientRect()
+        if (rect.top < window.innerHeight) el.classList.add('in')
+      })
+    }, 100)
+
+    // Signup handler
+    async function handleSignup(source) {
+      const emailEl = document.getElementById(source + '-email')
+      const formWrap = document.getElementById(source + '-form-wrap')
+      const successEl = document.getElementById(source + '-success')
+      const email = emailEl ? emailEl.value.trim() : ''
+
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (emailEl) {
+          emailEl.style.outline = '1.5px solid #e05555'
+          emailEl.focus()
+          setTimeout(() => emailEl.style.outline = '', 1800)
+        }
+        return
+      }
+
+      // POST to Tally waitlist
+      try {
+        await fetch('https://api.tally.so/r/5zi7qoc5xyc', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        })
+      } catch(e) { /* fail silently */ }
+      if (formWrap) formWrap.style.display = 'none'
+      if (successEl) successEl.classList.add('show')
+    }
+
+    // Enter key
+    document.querySelectorAll('.capture-input').forEach(input => {
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          handleSignup(input.id.split('-')[0])
+        }
+      })
+    })
+  </script>
+
+</body>
+</html>
