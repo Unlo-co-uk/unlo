@@ -35,18 +35,6 @@ const MOCK_VEHICLES: Record<string, Vehicle> = {
   },
 };
 
-// Map DVLA fuel types to our enum
-function mapFuelType(dvlaFuel: string): string {
-  const fuelMap: Record<string, string> = {
-    'Petrol': 'Petrol',
-    'Diesel': 'Diesel',
-    'Electric': 'Electric',
-    'Hybrid': 'Hybrid',
-    'Other': 'Petrol',
-  };
-  return fuelMap[dvlaFuel] || 'Petrol';
-}
-
 // Estimate vehicle value based on make/model/year (simplified)
 function estimateValue(make: string, year: number): number {
   const baseValues: Record<string, number> = {
@@ -155,20 +143,23 @@ export async function POST(req: NextRequest): Promise<NextResponse<VrmLookupResp
     const dvlaData = await dvlaResponse.json();
 
     // Transform DVLA response to our Vehicle interface
-    const vehicle: Vehicle = {
-      make: dvlaData.make || 'Unknown',
-      model: dvlaData.model || 'Unknown',
-      year: dvlaData.yearOfManufacture || new Date().getFullYear(),
-      value: estimateValue(dvlaData.make || 'Unknown', dvlaData.yearOfManufacture || 2020),
-      registration: cleanReg,
-      color: dvlaData.colour || 'Unknown',
-      fuelType: mapFuelType(dvlaData.fuelType || 'Petrol'),
-      engineCapacity: dvlaData.engineCapacity || 2000,
+    const base = {
+      make: dvlaData.make,
+      model: dvlaData.colour, // DVLA doesn't return model — use ukvehicledata for that
+      year: parseInt(dvlaData.yearOfManufacture),
+      colour: dvlaData.colour,
+      engine: dvlaData.engineCapacity ? `${dvlaData.engineCapacity}cc` : "Unknown",
+      fuelType: dvlaData.fuelType,
+      motExpiry: dvlaData.motExpiryDate ?? null,
+      taxStatus: dvlaData.taxStatus,
+      valuationPrivate: 12000, // placeholder until valuation API wired
+      valuationTrade: 10500,
+      valuationRetail: 13200,
     };
 
     return NextResponse.json({
       success: true,
-      data: vehicle,
+      data: base,
     });
   } catch (error) {
     console.error('VRM lookup error:', error);
