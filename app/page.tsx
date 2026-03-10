@@ -242,7 +242,7 @@ export default function Home() {
             No credit check. No commitment. No catch.
           </p>
 
-          <button className="cta-btn" onClick={() => router.push("/cars")}>
+          <button className="cta-btn" onClick={() => router.push("/cars.html")}>
             See what your car unlocks →
           </button>
 
