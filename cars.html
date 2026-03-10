@@ -910,7 +910,7 @@
 
       try {
         const response = await fetch('/api/vrm', {
-          method: 'POST',
+          method: "GET"',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ registrationNumber: reg })
         })
@@ -991,7 +991,7 @@
       }
       try {
         await fetch('https://api.tally.so/r/5zi7qoc5xyc', {
-          method: 'POST',
+          method: "GET"',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
         })

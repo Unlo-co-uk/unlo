@@ -1,0 +1,442 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/_next/static/css/4d4b0d3be1a6dd38.css" data-precedence="next"/><link rel="preload" as="script" fetchPriority="low" href="/_next/static/chunks/webpack-c8441f2d519541e3.js"/><script src="/_next/static/chunks/fd9d1056-87da80e0c187477b.js" async=""></script><script src="/_next/static/chunks/117-baab43fc83142998.js" async=""></script><script src="/_next/static/chunks/main-app-cbe26a87df1769a2.js" async=""></script><script src="/_next/static/chunks/app/cars/page-c4d3e02e636fb113.js" async=""></script><title>Unlo — Unlock what you own</title><meta name="description" content="See your car&#x27;s value and accessible equity instantly."/><script src="/_next/static/chunks/polyfills-42372ed130431b0a.js" noModule=""></script></head><body><style>
+    @import url(&#x27;https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&amp;family=DM+Mono:wght@300;400;500&amp;display=swap&#x27;);
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    .unlo-root {
+      min-height: 100vh;
+      background: #080b10;
+      font-family: &#x27;Syne&#x27;, sans-serif;
+      color: #f0ede8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(201,163,84,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,163,84,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    .bg-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,163,84,0.06) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .wordmark {
+      position: absolute;
+      top: 28px;
+      left: 32px;
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #c9a354;
+      z-index: 10;
+    }
+
+    .badge {
+      position: absolute;
+      top: 28px;
+      right: 32px;
+      font-family: &#x27;DM Mono&#x27;, monospace;
+      font-size: 10px;
+      color: rgba(201,163,84,0.5);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border: 1px solid rgba(201,163,84,0.15);
+      padding: 4px 10px;
+      border-radius: 20px;
+      z-index: 10;
+    }
+
+    .screen {
+      width: 100%;
+      max-width: 440px;
+      padding: 40px 32px;
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .eyebrow {
+      font-family: &#x27;DM Mono&#x27;, monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #c9a354;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .eyebrow::before {
+      content: &#x27;&#x27;;
+      display: block;
+      width: 24px;
+      height: 1px;
+      background: #c9a354;
+    }
+
+    h1 {
+      font-size: 42px;
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -1.5px;
+      margin-bottom: 12px;
+    }
+
+    h1 span { color: #c9a354; }
+
+    .subhead {
+      font-size: 15px;
+      color: rgba(240,237,232,0.45);
+      line-height: 1.6;
+      margin-bottom: 40px;
+      font-weight: 400;
+    }
+
+    .reg-input-wrap {
+      background: rgba(201,163,84,0.05);
+      border: 1.5px solid rgba(201,163,84,0.15);
+      border-radius: 12px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .reg-flag {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .reg-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: &#x27;DM Mono&#x27;, monospace;
+      font-size: 22px;
+      font-weight: 500;
+      color: #f0ede8;
+      letter-spacing: 4px;
+      width: 100%;
+      text-transform: uppercase;
+    }
+
+    .reg-input::placeholder {
+      color: rgba(240,237,232,0.2);
+      letter-spacing: 3px;
+    }
+
+    .cta-btn {
+      width: 100%;
+      background: #c9a354;
+      color: #080b10;
+      border: none;
+      border-radius: 12px;
+      padding: 18px;
+      font-family: &#x27;Syne&#x27;, sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    .cta-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .cta-btn:active { transform: translateY(0); }
+    .cta-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .trust-row {
+      display: flex;
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .trust-item {
+      font-family: &#x27;DM Mono&#x27;, monospace;
+      font-size: 10px;
+      color: rgba(240,237,232,0.3);
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .trust-item::before {
+      content: &#x27;·&#x27;;
+      color: #c9a354;
+      font-size: 14px;
+    }
+
+    /* Screen 2 */
+    .vehicle-label {
+      font-family: &#x27;DM Mono&#x27;, monospace;
+      font-size: 11px;
+      color: rgba(240,237,232,0.35);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .vehicle-name {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 36px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .metric-card {
+      background: rgba(201,163,84,0.04);
+      border: 1px solid rgba(201,163,84,0.1);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    .metric-card.featured {
+      grid-column: 1 / -1;
+      background: rgba(201,163,84,0.08);
+      border-color: rgba(201,163,84,0.25);
+    }
+
+    .metric-label {
+      font-family: &#x27;DM Mono&#x27;, monospace;
+      font-size: 10px;
+      color: rgba(240,237,232,0.4);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #f0ede8;
+    }
+
+    .metric-value.gold { color: #c9a354; }
+
+    .metric-sub {
+      font-size: 12px;
+      color: rgba(240,237,232,0.3);
+      margin-top: 3px;
+    }
+
+    .bar-wrap {
+      background: rgba(201,163,84,0.06);
+      border: 1px solid rgba(201,163,84,0.1);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .bar-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: &#x27;DM Mono&#x27;, monospace;
+      font-size: 10px;
+      color: rgba(240,237,232,0.35);
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .bar-track {
+      height: 10px;
+      background: rgba(201,163,84,0.1);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #c9a354, #e8c876);
+      border-radius: 99px;
+      animation: barGrow 1s ease forwards;
+    }
+
+    @keyframes barGrow {
+      from { width: 0%; }
+      to { width: 60%; }
+    }
+
+    .bar-segments {
+      display: flex;
+      justify-content: space-between;
+      font-family: &#x27;DM Mono&#x27;, monospace;
+      font-size: 10px;
+    }
+
+    .seg-accessible { color: #c9a354; }
+    .seg-remaining { color: rgba(240,237,232,0.3); }
+
+    .email-input-wrap {
+      background: rgba(201,163,84,0.05);
+      border: 1.5px solid rgba(201,163,84,0.15);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .email-input-wrap:focus-within {
+      border-color: rgba(201,163,84,0.5);
+    }
+
+    .email-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: &#x27;Syne&#x27;, sans-serif;
+      font-size: 16px;
+      color: #f0ede8;
+      width: 100%;
+    }
+
+    .email-input::placeholder { color: rgba(240,237,232,0.25); }
+
+    .features-list {
+      margin-bottom: 28px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(201,163,84,0.07);
+      font-size: 14px;
+      color: rgba(240,237,232,0.65);
+    }
+
+    .feature-dot {
+      width: 6px;
+      height: 6px;
+      background: #c9a354;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* Loader */
+    .loader-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding: 60px 0;
+    }
+
+    .spinner {
+      width: 44px;
+      height: 44px;
+      border: 2px solid rgba(201,163,84,0.1);
+      border-top-color: #c9a354;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loader-text {
+      font-family: &#x27;DM Mono&#x27;, monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: rgba(201,163,84,0.5);
+      text-transform: uppercase;
+    }
+
+    /* Success screen */
+    .success-icon {
+      width: 64px;
+      height: 64px;
+      background: rgba(201,163,84,0.1);
+      border: 2px solid #c9a354;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 24px;
+    }
+
+    .step-dots {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 48px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(201,163,84,0.2);
+      transition: all 0.3s;
+    }
+
+    .dot.active {
+      width: 20px;
+      border-radius: 3px;
+      background: #c9a354;
+    }
+
+    .back-btn {
+      background: transparent;
+      border: none;
+      color: rgba(240,237,232,0.3);
+      font-family: &#x27;DM Mono&#x27;, monospace;
+      font-size: 11px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .back-btn:hover { color: rgba(240,237,232,0.6); }
+
+    .disclaimer {
+      margin-top: 16px;
+      font-family: &#x27;DM Mono&#x27;, monospace;
+      font-size: 10px;
+      color: rgba(240,237,232,0.2);
+      text-align: center;
+    }
+  </style><div class="unlo-root"><div class="bg-grid"></div><div class="bg-glow"></div><div class="wordmark">unlo</div><div class="badge">Private Beta</div><div class="screen"><div class="step-dots"><div class="dot active"></div><div class="dot"></div><div class="dot"></div></div><div class="eyebrow">Asset intelligence</div><h1>What could your car <span>unlock?</span></h1><p class="subhead">Enter your registration plate for an instant equity estimate — no commitment, no credit check.</p><div class="reg-input-wrap"><span class="reg-flag">🇬🇧</span><input class="reg-input" placeholder="AB12 CDE" maxLength="8" value=""/></div><button class="cta-btn" disabled="">Check value →</button><div class="trust-row"><div class="trust-item">Instant valuation</div><div class="trust-item">Equity estimate</div><div class="trust-item">No commitment</div></div><p style="margin-top:32px;font-family:&#x27;DM Mono&#x27;, monospace;font-size:10px;color:rgba(240,237,232,0.15);line-height:1.7">Try: AB12CDE · LK21ABC · GF18XYZ · or any plate for a demo</p></div></div><script src="/_next/static/chunks/webpack-c8441f2d519541e3.js" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0]);self.__next_f.push([2,null])</script><script>self.__next_f.push([1,"1:HL[\"/_next/static/css/4d4b0d3be1a6dd38.css\",\"style\"]\n"])</script><script>self.__next_f.push([1,"2:I[2846,[],\"\"]\n4:I[9107,[],\"ClientPageRoot\"]\n5:I[9220,[\"520\",\"static/chunks/app/cars/page-c4d3e02e636fb113.js\"],\"default\",1]\n6:I[4707,[],\"\"]\n7:I[6423,[],\"\"]\n9:I[1060,[],\"\"]\na:[]\n"])</script><script>self.__next_f.push([1,"0:[\"$\",\"$L2\",null,{\"buildId\":\"R5_Fc4uXIjwFs4dxhScn_\",\"assetPrefix\":\"\",\"urlParts\":[\"\",\"cars\"],\"initialTree\":[\"\",{\"children\":[\"cars\",{\"children\":[\"__PAGE__\",{}]}]},\"$undefined\",\"$undefined\",true],\"initialSeedData\":[\"\",{\"children\":[\"cars\",{\"children\":[\"__PAGE__\",{},[[\"$L3\",[\"$\",\"$L4\",null,{\"props\":{\"params\":{},\"searchParams\":{}},\"Component\":\"$5\"}],null],null],null]},[null,[\"$\",\"$L6\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\",\"cars\",\"children\"],\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L7\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$undefined\",\"notFoundStyles\":\"$undefined\"}]],null]},[[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/4d4b0d3be1a6dd38.css\",\"precedence\":\"next\",\"crossOrigin\":\"$undefined\"}]],[\"$\",\"html\",null,{\"lang\":\"en\",\"children\":[\"$\",\"body\",null,{\"children\":[\"$\",\"$L6\",null,{\"parallelRouterKey\":\"children\",\"segmentPath\":[\"children\"],\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L7\",null,{}],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"}],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}}],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":\"404\"}],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"}]}]]}]}]],\"notFoundStyles\":[]}]}]}]],null],null],\"couldBeIntercepted\":false,\"initialHead\":[null,\"$L8\"],\"globalErrorComponent\":\"$9\",\"missingSlots\":\"$Wa\"}]\n"])</script><script>self.__next_f.push([1,"8:[[\"$\",\"meta\",\"0\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"}],[\"$\",\"meta\",\"1\",{\"charSet\":\"utf-8\"}],[\"$\",\"title\",\"2\",{\"children\":\"Unlo — Unlock what you own\"}],[\"$\",\"meta\",\"3\",{\"name\":\"description\",\"content\":\"See your car's value and accessible equity instantly.\"}]]\n3:null\n"])</script></body></html>

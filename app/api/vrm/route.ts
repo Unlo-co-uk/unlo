@@ -56,9 +56,9 @@ function estimateValue(make: string, year: number): number {
 export async function POST(req: NextRequest): Promise<NextResponse<VrmLookupResponse>> {
   try {
     const body = await req.json();
-    const { registration } = body;
+    const { registrationNumber } = body;
 
-    if (!registration || typeof registration !== 'string') {
+    if (!registrationNumber || typeof registrationNumber !== 'string') {
       return NextResponse.json(
         {
           success: false,
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<VrmLookupResp
       );
     }
 
-    const cleanReg = registration.replace(/\s/g, '').toUpperCase();
+    const cleanReg = registrationNumber.replace(/\s/g, '').toUpperCase();
 
     // Check mock database first (for demo/test plates)
     if (MOCK_VEHICLES[cleanReg]) {

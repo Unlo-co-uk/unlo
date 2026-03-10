@@ -1,5 +1,4 @@
 {
-  "rewrites": [
-    { "source": "/cars", "destination": "/cars.html" }
-  ]
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next"
 }
